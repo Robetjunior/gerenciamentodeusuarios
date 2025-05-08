@@ -34,16 +34,18 @@ const checkPermission = (token: string | null, requiredRole: Role[] = ['admin'])
   console.log('Token being checked:', token);
   
   // In our mock token format: mock-jwt-token-[id]-[role]-[timestamp]
+  // Example: mock-jwt-token-1-admin-1746740794449
   const parts = token.split('-');
   
-  // Ensure token has enough parts
-  if (parts.length < 4) {
+  // Ensure token has enough parts (at least 5 parts in our format)
+  if (parts.length < 5) {
     console.error('Invalid token format:', token);
     throw new Error('401 Unauthorized - Invalid token format');
   }
   
-  // The role should be the 3rd element (index 2) in our token format
-  const userRole = parts[2];
+  // In our format: mock(0)-jwt(1)-token(2)-[id](3)-[role](4)-[timestamp](5)
+  // So the role is at index 4, not index 2
+  const userRole = parts[3];
   console.log('Extracted user role:', userRole);
   console.log('Required roles:', requiredRole);
   
