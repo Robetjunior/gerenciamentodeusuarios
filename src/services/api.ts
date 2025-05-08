@@ -1,4 +1,3 @@
-
 import { User, LoginCredentials, RegisterData, Role } from '../types';
 import { toast } from '@/components/ui/use-toast';
 
@@ -30,12 +29,19 @@ const checkPermission = (token: string | null, requiredRole: Role[] = ['admin'])
     throw new Error('401 Unauthorized - Not authenticated');
   }
   
+  // Debug the token
+  console.log('Token being checked:', token);
+  
   const tokenParts = token.split('-');
-  if (tokenParts.length < 3) {
+  if (tokenParts.length < 4) {
     throw new Error('401 Unauthorized - Invalid token format');
   }
   
+  // In our token format, the role is the third part (index 2)
   const userRole = tokenParts[2];
+  console.log('Extracted user role:', userRole);
+  console.log('Required roles:', requiredRole);
+  
   if (!requiredRole.includes(userRole as Role)) {
     throw new Error(`403 Forbidden - ${userRole} role cannot perform this action`);
   }
@@ -60,8 +66,15 @@ export const api = {
   register: async (data: RegisterData, token: string | null): Promise<User> => {
     await delay(800);
 
+    console.log('Attempting to register with token:', token);
+    
     // Check if the requester has admin permissions
-    checkPermission(token, ['admin']);
+    try {
+      checkPermission(token, ['admin']);
+    } catch (error) {
+      console.error('Permission check failed:', error);
+      throw error;
+    }
     
     // Check if email already exists
     if (users.some(u => u.email === data.email)) {
@@ -76,6 +89,7 @@ export const api = {
     };
     
     users = [...users, newUser];
+    console.log('User registered successfully:', newUser);
     return newUser;
   },
   
