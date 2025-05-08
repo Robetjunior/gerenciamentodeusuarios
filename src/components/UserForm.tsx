@@ -85,6 +85,8 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
     setLoading(true);
     
     try {
+      console.log("Submitting form with token:", token);
+      
       if (isEditing && user) {
         // Only send fields that were changed
         const updateData: Partial<User> = {};
@@ -106,6 +108,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
         title: 'Error',
         description: (error as Error).message,
       });
+      console.error("API Error:", error);
     } finally {
       setLoading(false);
     }

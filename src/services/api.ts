@@ -30,7 +30,12 @@ const checkPermission = (token: string | null, requiredRole: Role[] = ['admin'])
     throw new Error('401 Unauthorized - Not authenticated');
   }
   
-  const userRole = token.split('-')[2];
+  const tokenParts = token.split('-');
+  if (tokenParts.length < 3) {
+    throw new Error('401 Unauthorized - Invalid token format');
+  }
+  
+  const userRole = tokenParts[2];
   if (!requiredRole.includes(userRole as Role)) {
     throw new Error(`403 Forbidden - ${userRole} role cannot perform this action`);
   }
