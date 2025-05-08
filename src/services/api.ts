@@ -33,18 +33,29 @@ const checkPermission = (token: string | null, requiredRole: Role[] = ['admin'])
   // Debug the token
   console.log('Token being checked:', token);
   
-  const tokenParts = token.split('-');
-  if (tokenParts.length < 4) {
+  // In our mock token format: mock-jwt-token-[id]-[role]-[timestamp]
+  const parts = token.split('-');
+  
+  // Ensure token has enough parts
+  if (parts.length < 4) {
+    console.error('Invalid token format:', token);
     throw new Error('401 Unauthorized - Invalid token format');
   }
   
-  // In our token format, the role is at index 2 (mock-jwt-token-[id]-[role]-[timestamp])
-  const userRole = tokenParts[2];
+  // The role should be the 3rd element (index 2) in our token format
+  const userRole = parts[2];
   console.log('Extracted user role:', userRole);
   console.log('Required roles:', requiredRole);
   
-  // Make sure we're checking if the user role is in the required roles array
+  // Verify the role is valid
+  if (!['admin', 'manager', 'user'].includes(userRole)) {
+    console.error('Invalid role in token:', userRole);
+    throw new Error(`401 Unauthorized - Invalid role in token: ${userRole}`);
+  }
+  
+  // Check if user has required role
   if (!requiredRole.includes(userRole as Role)) {
+    console.error(`Permission denied: ${userRole} role cannot perform this action`);
     throw new Error(`403 Forbidden - ${userRole} role cannot perform this action`);
   }
   
@@ -79,6 +90,10 @@ export const api = {
       if (users.some(u => u.email === data.email)) {
         throw new Error('400 Bad Request - Email already in use');
       }
+      
+      // Create password for the new user (in a real app, you'd hash this)
+      const password = data.email.split('@')[0] + '123';
+      credentials[data.email] = password;
       
       const newUser = {
         id: (users.length + 1).toString(),
