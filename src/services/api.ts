@@ -1,3 +1,4 @@
+
 import { User, LoginCredentials, RegisterData, Role } from '../types';
 import { toast } from '@/components/ui/use-toast';
 
@@ -37,11 +38,12 @@ const checkPermission = (token: string | null, requiredRole: Role[] = ['admin'])
     throw new Error('401 Unauthorized - Invalid token format');
   }
   
-  // In our token format, the role is the third part (index 2)
+  // In our token format, the role is at index 2 (mock-jwt-token-[id]-[role]-[timestamp])
   const userRole = tokenParts[2];
   console.log('Extracted user role:', userRole);
   console.log('Required roles:', requiredRole);
   
+  // Make sure we're checking if the user role is in the required roles array
   if (!requiredRole.includes(userRole as Role)) {
     throw new Error(`403 Forbidden - ${userRole} role cannot perform this action`);
   }
@@ -68,29 +70,30 @@ export const api = {
 
     console.log('Attempting to register with token:', token);
     
-    // Check if the requester has admin permissions
     try {
-      checkPermission(token, ['admin']);
+      // Check if the requester has admin permissions
+      const role = checkPermission(token, ['admin']);
+      console.log('Permission check passed. User role:', role);
+      
+      // Check if email already exists
+      if (users.some(u => u.email === data.email)) {
+        throw new Error('400 Bad Request - Email already in use');
+      }
+      
+      const newUser = {
+        id: (users.length + 1).toString(),
+        name: data.name,
+        email: data.email,
+        role: data.role,
+      };
+      
+      users = [...users, newUser];
+      console.log('User registered successfully:', newUser);
+      return newUser;
     } catch (error) {
-      console.error('Permission check failed:', error);
+      console.error('Error during registration:', error);
       throw error;
     }
-    
-    // Check if email already exists
-    if (users.some(u => u.email === data.email)) {
-      throw new Error('400 Bad Request - Email already in use');
-    }
-    
-    const newUser = {
-      id: (users.length + 1).toString(),
-      name: data.name,
-      email: data.email,
-      role: data.role,
-    };
-    
-    users = [...users, newUser];
-    console.log('User registered successfully:', newUser);
-    return newUser;
   },
   
   getCurrentUser: async (token: string | null): Promise<User> => {
