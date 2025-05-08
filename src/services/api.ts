@@ -33,35 +33,39 @@ const checkPermission = (token: string | null, requiredRole: Role[] = ['admin'])
   // Debug the token
   console.log('Token being checked:', token);
   
-  // In our mock token format: mock-jwt-token-[id]-[role]-[timestamp]
-  // Example: mock-jwt-token-1-admin-1746740794449
-  const parts = token.split('-');
-  
-  // Ensure token has enough parts (at least 5 parts in our format)
-  if (parts.length < 5) {
-    console.error('Invalid token format:', token);
-    throw new Error('401 Unauthorized - Invalid token format');
+  try {
+    // In our mock token format: mock-jwt-token-[id]-[role]-[timestamp]
+    // Example: mock-jwt-token-1-admin-1746741254979
+    const parts = token.split('-');
+    
+    // Ensure token has enough parts (at least 6 parts in our format)
+    if (parts.length < 6) {
+      console.error('Invalid token format:', token);
+      throw new Error('401 Unauthorized - Invalid token format');
+    }
+    
+    // In our format: mock(0)-jwt(1)-token(2)-[id](3)-[role](4)-[timestamp](5)
+    const userRole = parts[4]; // Role is at index 4
+    console.log('Extracted user role:', userRole);
+    console.log('Required roles:', requiredRole);
+    
+    // Verify the role is valid
+    if (!['admin', 'manager', 'user'].includes(userRole)) {
+      console.error('Invalid role in token:', userRole);
+      throw new Error(`401 Unauthorized - Invalid role in token: ${userRole}`);
+    }
+    
+    // Check if user has required role
+    if (!requiredRole.includes(userRole as Role)) {
+      console.error(`Permission denied: ${userRole} role cannot perform this action`);
+      throw new Error(`403 Forbidden - ${userRole} role cannot perform this action`);
+    }
+    
+    return userRole as Role;
+  } catch (error) {
+    console.error('Error during permission check:', error);
+    throw error;
   }
-  
-  // In our format: mock(0)-jwt(1)-token(2)-[id](3)-[role](4)-[timestamp](5)
-  // So the role is at index 4, not index 2
-  const userRole = parts[3];
-  console.log('Extracted user role:', userRole);
-  console.log('Required roles:', requiredRole);
-  
-  // Verify the role is valid
-  if (!['admin', 'manager', 'user'].includes(userRole)) {
-    console.error('Invalid role in token:', userRole);
-    throw new Error(`401 Unauthorized - Invalid role in token: ${userRole}`);
-  }
-  
-  // Check if user has required role
-  if (!requiredRole.includes(userRole as Role)) {
-    console.error(`Permission denied: ${userRole} role cannot perform this action`);
-    throw new Error(`403 Forbidden - ${userRole} role cannot perform this action`);
-  }
-  
-  return userRole as Role;
 };
 
 export const api = {
