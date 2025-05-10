@@ -26,15 +26,15 @@ const Login = () => {
     const newErrors = { email: '', password: '' };
 
     if (!credentials.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email é obrigatório';
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(credentials.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = 'Email é inválido';
       isValid = false;
     }
 
     if (!credentials.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Senha é obrigatória';
       isValid = false;
     }
 
@@ -78,13 +78,13 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="mb-8 flex items-center justify-center">
           <Shield className="mr-2 h-8 w-8 text-primary" />
-          <h1 className="text-2xl font-bold text-foreground">Access Control System</h1>
+          <h1 className="text-2xl font-bold text-foreground">Sistema de Controle de Acesso</h1>
         </div>
         
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-xl">Login</CardTitle>
-            <CardDescription>Enter your credentials to access your account</CardDescription>
+            <CardDescription>Digite suas credenciais para acessar sua conta</CardDescription>
           </CardHeader>
           
           <form onSubmit={handleSubmit}>
@@ -97,7 +97,7 @@ const Login = () => {
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder="nome@exemplo.com"
                     className="pl-10"
                     value={credentials.email}
                     onChange={handleChange}
@@ -107,7 +107,7 @@ const Login = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Senha</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                   <Input
@@ -126,20 +126,20 @@ const Login = () => {
             
             <CardFooter className="flex flex-col space-y-4">
               <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Logging in...' : 'Login'}
+                {loading ? 'Entrando...' : 'Entrar'}
               </Button>
               
               <div className="w-full text-center text-sm">
-                <p className="mb-2 text-muted-foreground">Demo accounts (click to try):</p>
+                <p className="mb-2 text-muted-foreground">Contas de demonstração (clique para testar):</p>
                 <div className="flex justify-center space-x-2">
                   <Button type="button" variant="outline" size="sm" className="text-admin" onClick={() => demoLogin('admin')}>
-                    Admin
+                    Administrador
                   </Button>
                   <Button type="button" variant="outline" size="sm" className="text-manager" onClick={() => demoLogin('manager')}>
-                    Manager
+                    Gerente
                   </Button>
                   <Button type="button" variant="outline" size="sm" className="text-user" onClick={() => demoLogin('user')}>
-                    User
+                    Usuário
                   </Button>
                 </div>
               </div>
