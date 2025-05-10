@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { User } from '@/types';
@@ -9,15 +10,15 @@ import { toast } from '@/components/ui/sonner';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 const EditUser = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { token, user: currentUser, updateUserData } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const fetchUser = async () => {
-      if (!id || typeof id !== 'string') return;
+      if (!id) return;
       
       try {
         setLoading(true);
@@ -26,7 +27,7 @@ const EditUser = () => {
         // Check if the current user has permission to edit this user
         if (currentUser?.role === 'user' && currentUser.id !== id) {
           toast('Acesso negado: Você não tem permissão para editar outros usuários');
-          router.push('/profile');
+          navigate('/profile');
           return;
         }
         
@@ -37,14 +38,14 @@ const EditUser = () => {
           currentUser.id !== id
         ) {
           toast(`Acesso negado: Gerentes não podem editar contas de ${fetchedUser.role === 'admin' ? 'administradores' : 'gerentes'}`);
-          router.push('/users');
+          navigate('/users');
           return;
         }
         
         setUser(fetchedUser);
       } catch (error) {
         toast(`Erro: ${(error as Error).message}`);
-        router.push('/users');
+        navigate('/users');
       } finally {
         setLoading(false);
       }
@@ -53,7 +54,7 @@ const EditUser = () => {
     if (id) {
       fetchUser();
     }
-  }, [id, token, router, currentUser]);
+  }, [id, token, navigate, currentUser]);
   
   if (loading) {
     return (

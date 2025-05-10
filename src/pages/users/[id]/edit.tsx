@@ -1,19 +1,19 @@
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import EditUser from '@/pages/EditUser'; // Import the original EditUser component
+import EditUser from '@/pages/EditUser';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function EditUserPage() {
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/login');
+      navigate('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, navigate]);
 
   return (
     <ProtectedRoute>

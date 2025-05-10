@@ -1,6 +1,6 @@
+
 import { useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -24,7 +24,7 @@ const NavItem: React.FC<NavItemProps> = ({ href, icon, label, active, requiredRo
   }
 
   return (
-    <Link href={href} className="w-full">
+    <Link to={href} className="w-full">
       <Button
         variant={active ? 'secondary' : 'ghost'}
         className={cn(
@@ -52,13 +52,14 @@ const roleTitles: Record<Role, string> = {
 };
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const handleLogout = () => {
     logout();
-    router.push('/login');
+    navigate('/login');
   };
 
   return (
@@ -91,27 +92,27 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             href="/dashboard"
             icon={<Settings className="h-5 w-5" />}
             label="Painel"
-            active={router.pathname === '/dashboard'}
+            active={location.pathname === '/dashboard'}
           />
           <NavItem
             href="/users"
             icon={<Users className="h-5 w-5" />}
             label="Usuários"
-            active={router.pathname === '/users'}
+            active={location.pathname === '/users'}
             requiredRoles={['admin', 'manager']}
           />
           <NavItem
             href="/users/new"
             icon={<UserPlus className="h-5 w-5" />}
             label="Adicionar Usuário"
-            active={router.pathname === '/users/new'}
+            active={location.pathname === '/users/new'}
             requiredRoles={['admin']}
           />
           <NavItem
             href="/profile"
             icon={<User className="h-5 w-5" />}
             label="Meu Perfil"
-            active={router.pathname === '/profile'}
+            active={location.pathname === '/profile'}
           />
         </div>
         
@@ -146,27 +147,27 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 href="/dashboard"
                 icon={<Settings className="h-5 w-5" />}
                 label="Painel"
-                active={router.pathname === '/dashboard'}
+                active={location.pathname === '/dashboard'}
               />
               <NavItem
                 href="/users"
                 icon={<Users className="h-5 w-5" />}
                 label="Usuários"
-                active={router.pathname === '/users'}
+                active={location.pathname === '/users'}
                 requiredRoles={['admin', 'manager']}
               />
               <NavItem
                 href="/users/new"
                 icon={<UserPlus className="h-5 w-5" />}
                 label="Adicionar Usuário"
-                active={router.pathname === '/users/new'}
+                active={location.pathname === '/users/new'}
                 requiredRoles={['admin']}
               />
               <NavItem
                 href="/profile"
                 icon={<User className="h-5 w-5" />}
                 label="Meu Perfil"
-                active={router.pathname === '/profile'}
+                active={location.pathname === '/profile'}
               />
               <Button variant="outline" className="w-full justify-start gap-2" onClick={handleLogout}>
                 <LogOut className="h-5 w-5" />

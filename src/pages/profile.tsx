@@ -1,19 +1,19 @@
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import Profile from '@/pages/Profile'; // Import the original Profile component
+import Profile from './Profile'; // Use relative path
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function ProfilePage() {
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/login');
+      navigate('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, navigate]);
 
   return (
     <ProtectedRoute>

@@ -1,5 +1,5 @@
 
-import Unauthorized from '@/pages/Unauthorized'; // Import the original Unauthorized component
+import Unauthorized from './Unauthorized'; // Use relative path
 
 export default function UnauthorizedPage() {
   return <Unauthorized />;

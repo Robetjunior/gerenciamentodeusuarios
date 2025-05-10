@@ -1,5 +1,5 @@
 
-import NotFound from '@/pages/NotFound'; // Import the original NotFound component
+import NotFound from './NotFound'; // Use relative path
 
 export default function NotFoundPage() {
   return <NotFound />;

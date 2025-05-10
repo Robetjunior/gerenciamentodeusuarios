@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { api } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -59,7 +59,7 @@ const UsersList = () => {
           </div>
           
           {currentUser?.role === 'admin' && (
-            <Link href="/users/new" passHref>
+            <Link to="/users/new">
               <Button>
                 <UserPlus className="mr-2 h-4 w-4" />
                 Adicionar Usuário

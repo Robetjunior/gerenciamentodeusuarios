@@ -1,21 +1,21 @@
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import NewUser from '@/pages/NewUser'; // Import the original NewUser component
+import NewUser from '@/pages/NewUser';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function NewUserPage() {
   const { isAuthenticated, user } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/login');
+      navigate('/login');
     } else if (!user || user.role !== 'admin') {
-      router.push('/unauthorized');
+      navigate('/unauthorized');
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, navigate]);
 
   return (
     <ProtectedRoute allowedRoles={["admin"]}>

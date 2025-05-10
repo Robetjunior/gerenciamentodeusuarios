@@ -1,5 +1,5 @@
 
-import Login from '@/pages/Login'; // Import the original Login component
+import Login from './Login'; // Use relative path
 
 export default function LoginPage() {
   return <Login />;
