@@ -6,12 +6,13 @@ import { api } from '@/services/api';
 import { User } from '@/types';
 import Layout from '@/components/Layout';
 import UserForm from '@/components/UserForm';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const EditUser = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token, user: currentUser } = useAuth();
+  const { token, user: currentUser, getCurrentUser } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -25,10 +26,8 @@ const EditUser = () => {
         
         // Check if the current user has permission to edit this user
         if (currentUser?.role === 'user' && currentUser.id !== id) {
-          toast({
-            variant: 'destructive',
-            title: 'Access Denied',
-            description: 'You do not have permission to edit other users',
+          toast('Acesso negado', {
+            description: 'Você não tem permissão para editar outros usuários'
           });
           navigate('/profile');
           return;
@@ -40,10 +39,8 @@ const EditUser = () => {
           (fetchedUser.role === 'admin' || fetchedUser.role === 'manager') &&
           currentUser.id !== id
         ) {
-          toast({
-            variant: 'destructive',
-            title: 'Access Denied',
-            description: `Managers cannot edit ${fetchedUser.role} accounts`,
+          toast('Acesso negado', {
+            description: `Gerentes não podem editar contas de ${fetchedUser.role === 'admin' ? 'administradores' : 'gerentes'}`
           });
           navigate('/users');
           return;
@@ -51,10 +48,8 @@ const EditUser = () => {
         
         setUser(fetchedUser);
       } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: (error as Error).message,
+        toast('Erro', {
+          description: (error as Error).message
         });
         navigate('/users');
       } finally {
@@ -63,7 +58,7 @@ const EditUser = () => {
     };
     
     fetchUser();
-  }, [id, token, navigate]);
+  }, [id, token, navigate, currentUser]);
   
   if (loading) {
     return (
@@ -79,7 +74,7 @@ const EditUser = () => {
     return (
       <Layout>
         <div className="rounded-lg border bg-card p-8 text-center">
-          <p className="text-lg font-medium">User not found</p>
+          <p className="text-lg font-medium">Usuário não encontrado</p>
         </div>
       </Layout>
     );
@@ -88,12 +83,24 @@ const EditUser = () => {
   return (
     <Layout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Edit User</h1>
-          <p className="text-muted-foreground">Update user information and permissions.</p>
+        <div className="flex justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Editar Usuário</h1>
+            <p className="text-muted-foreground">Atualize as informações e permissões do usuário.</p>
+          </div>
+          <ThemeToggle />
         </div>
         
-        <UserForm user={user} isEditing />
+        <UserForm 
+          user={user} 
+          isEditing 
+          onSuccess={() => {
+            // Atualizar dados do usuário logado se for o próprio usuário
+            if (currentUser && currentUser.id === user.id) {
+              getCurrentUser();
+            }
+          }}
+        />
       </div>
     </Layout>
   );

@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Layout from '@/components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Users, User, UserCheck } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -10,41 +11,46 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to your role-based access control system.</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Painel</h1>
+            <p className="text-muted-foreground">Bem-vindo ao sistema de controle de acesso baseado em funções.</p>
+          </div>
+          <ThemeToggle />
         </div>
         
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Your Role</CardTitle>
+              <CardTitle className="text-sm font-medium">Sua Função</CardTitle>
               <Shield className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold capitalize">{user?.role}</div>
+              <div className="text-2xl font-bold capitalize">
+                {user?.role === 'admin' ? 'Administrador' : user?.role === 'manager' ? 'Gerente' : 'Usuário'}
+              </div>
               <p className="text-xs text-muted-foreground">
-                Your access level determines what you can do in the system.
+                Seu nível de acesso determina o que você pode fazer no sistema.
               </p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Your Name</CardTitle>
+              <CardTitle className="text-sm font-medium">Seu Nome</CardTitle>
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{user?.name}</div>
               <p className="text-xs text-muted-foreground">
-                Your profile name as shown in the system.
+                Seu nome de perfil como mostrado no sistema.
               </p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Your Permissions</CardTitle>
+              <CardTitle className="text-sm font-medium">Suas Permissões</CardTitle>
               <UserCheck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -53,23 +59,23 @@ const Dashboard = () => {
                   <>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>View all users</p>
+                      <p>Ver todos os usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>Create new users</p>
+                      <p>Criar novos usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>Edit all users</p>
+                      <p>Editar todos os usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>Delete users</p>
+                      <p>Excluir usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>Change user roles</p>
+                      <p>Alterar funções de usuários</p>
                     </div>
                   </>
                 )}
@@ -78,23 +84,23 @@ const Dashboard = () => {
                   <>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>View all users</p>
+                      <p>Ver todos os usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>Edit regular users</p>
+                      <p>Editar usuários comuns</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-red-500"></div>
-                      <p>Cannot create users</p>
+                      <p>Não pode criar usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-red-500"></div>
-                      <p>Cannot delete users</p>
+                      <p>Não pode excluir usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-red-500"></div>
-                      <p>Cannot change user roles</p>
+                      <p>Não pode alterar funções de usuários</p>
                     </div>
                   </>
                 )}
@@ -103,23 +109,23 @@ const Dashboard = () => {
                   <>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>View own profile</p>
+                      <p>Ver próprio perfil</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-green-500"></div>
-                      <p>Edit own profile</p>
+                      <p>Editar próprio perfil</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-red-500"></div>
-                      <p>Cannot view other users</p>
+                      <p>Não pode ver outros usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-red-500"></div>
-                      <p>Cannot create users</p>
+                      <p>Não pode criar usuários</p>
                     </div>
                     <div className="flex items-center">
                       <div className="mr-2 h-2 w-2 rounded-full bg-red-500"></div>
-                      <p>Cannot delete users</p>
+                      <p>Não pode excluir usuários</p>
                     </div>
                   </>
                 )}
@@ -130,37 +136,37 @@ const Dashboard = () => {
         
         <Card>
           <CardHeader>
-            <CardTitle>Role-Based Access Control System</CardTitle>
+            <CardTitle>Sistema de Controle de Acesso Baseado em Funções</CardTitle>
             <CardDescription>
-              This system demonstrates how different user roles have different permissions.
+              Este sistema demonstra como diferentes funções de usuários têm diferentes permissões.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <h3 className="mb-2 font-semibold">Role Hierarchy:</h3>
+              <h3 className="mb-2 font-semibold">Hierarquia de Funções:</h3>
               <div className="space-y-2">
                 <div className="rounded-md border bg-admin/10 p-3">
-                  <p className="font-medium text-admin">Admin</p>
+                  <p className="font-medium text-admin">Administrador</p>
                   <p className="text-sm">
-                    Complete access with ability to manage all users and assign roles.
+                    Acesso completo com capacidade de gerenciar todos os usuários e atribuir funções.
                   </p>
                 </div>
                 <div className="rounded-md border bg-manager/10 p-3">
-                  <p className="font-medium text-manager">Manager</p>
+                  <p className="font-medium text-manager">Gerente</p>
                   <p className="text-sm">
-                    Can view all users and edit regular users, but cannot change roles or add new users.
+                    Pode ver todos os usuários e editar usuários comuns, mas não pode alterar funções ou adicionar novos usuários.
                   </p>
                 </div>
                 <div className="rounded-md border bg-user/10 p-3">
-                  <p className="font-medium text-user">User</p>
+                  <p className="font-medium text-user">Usuário</p>
                   <p className="text-sm">
-                    Can only access and edit their own profile information.
+                    Pode acessar e editar apenas suas próprias informações de perfil.
                   </p>
                 </div>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              These permissions are enforced both on the frontend and backend for security.
+              Essas permissões são aplicadas tanto no frontend quanto no backend para segurança.
             </p>
           </CardContent>
         </Card>

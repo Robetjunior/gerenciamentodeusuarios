@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +32,12 @@ const roleBadgeStyles: Record<Role, string> = {
   user: 'bg-user/10 text-user border-user/20',
 };
 
+const roleTranslations: Record<Role, string> = {
+  admin: 'Administrador',
+  manager: 'Gerente',
+  user: 'Usuário',
+};
+
 const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
   const { user: currentUser, token } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -46,13 +52,13 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
     try {
       setIsDeleting(true);
       await api.deleteUser(user.id, token);
-      toast({ title: 'Success', description: 'User deleted successfully' });
+      toast('Sucesso', {
+        description: 'Usuário excluído com sucesso'
+      });
       onDelete();
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: (error as Error).message,
+      toast('Erro', {
+        description: (error as Error).message
       });
     } finally {
       setIsDeleting(false);
@@ -66,7 +72,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
           <span>{user.name}</span>
           <span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold', roleBadgeStyles[user.role])}>
             <BadgeCheck className="mr-1 h-3.5 w-3.5" />
-            {user.role}
+            {roleTranslations[user.role]}
           </span>
         </CardTitle>
       </CardHeader>
@@ -83,7 +89,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
           <Link to={`/users/${user.id}/edit`}>
             <Button variant="outline" size="sm" className="space-x-1">
               <Pencil className="h-4 w-4" />
-              <span>Edit</span>
+              <span>Editar</span>
             </Button>
           </Link>
         )}
@@ -93,21 +99,21 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm" className="space-x-1">
                 <Trash2 className="h-4 w-4" />
-                <span>Delete</span>
+                <span>Excluir</span>
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the user
-                  account for {user.name}.
+                  Esta ação não pode ser desfeita. Isso excluirá permanentemente a conta
+                  de usuário de {user.name}.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
-                  {isDeleting ? 'Deleting...' : 'Delete'}
+                  {isDeleting ? 'Excluindo...' : 'Excluir'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

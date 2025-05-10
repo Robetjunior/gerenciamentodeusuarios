@@ -2,12 +2,13 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { AuthState, LoginCredentials, User } from '@/types';
 import { api } from '@/services/api';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
   getCurrentUser: () => Promise<void>;
+  updateUserData: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,7 +16,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 type AuthAction =
   | { type: 'LOGIN_START' | 'LOGOUT' | 'GET_USER_START' }
   | { type: 'LOGIN_SUCCESS' | 'GET_USER_SUCCESS'; payload: { user: User; token: string } }
-  | { type: 'LOGIN_ERROR' | 'GET_USER_ERROR'; payload: string };
+  | { type: 'LOGIN_ERROR' | 'GET_USER_ERROR'; payload: string }
+  | { type: 'UPDATE_USER_DATA'; payload: User };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
@@ -35,6 +37,11 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         token: action.payload.token,
         loading: false,
         error: null,
+      };
+    case 'UPDATE_USER_DATA':
+      return {
+        ...state,
+        user: action.payload,
       };
     case 'LOGIN_ERROR':
     case 'GET_USER_ERROR':
@@ -66,7 +73,6 @@ const initialState: AuthState = {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-  const { toast } = useToast();
 
   // Check for stored token on initial load
   useEffect(() => {
@@ -74,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (storedToken) {
       getCurrentUser();
     } else {
-      dispatch({ type: 'GET_USER_ERROR', payload: 'No token found' });
+      dispatch({ type: 'GET_USER_ERROR', payload: 'Token não encontrado' });
     }
   }, []);
 
@@ -92,16 +98,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { user, token } = await api.login(credentials);
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
-      toast({
-        title: 'Login successful',
-        description: `Welcome back, ${user.name}!`,
+      toast('Login realizado com sucesso', {
+        description: `Bem-vindo, ${user.name}!`
       });
     } catch (error) {
       dispatch({ type: 'LOGIN_ERROR', payload: (error as Error).message });
-      toast({
-        variant: 'destructive',
-        title: 'Login failed',
-        description: (error as Error).message,
+      toast('Falha no login', {
+        description: (error as Error).message
       });
     }
   };
@@ -109,16 +112,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     dispatch({ type: 'LOGOUT' });
     localStorage.removeItem('token');
-    toast({
-      title: 'Logged out',
-      description: 'You have been successfully logged out',
+    toast('Desconectado', {
+      description: 'Você foi desconectado com sucesso'
     });
   };
 
   const getCurrentUser = async () => {
     const storedToken = localStorage.getItem('token');
     if (!storedToken) {
-      dispatch({ type: 'GET_USER_ERROR', payload: 'No token found' });
+      dispatch({ type: 'GET_USER_ERROR', payload: 'Token não encontrado' });
       return;
     }
 
@@ -132,11 +134,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Função para atualizar os dados do usuário localmente após edição
+  const updateUserData = (user: User) => {
+    if (state.user && state.user.id === user.id) {
+      dispatch({ type: 'UPDATE_USER_DATA', payload: user });
+      toast('Perfil atualizado', {
+        description: 'Suas informações foram atualizadas com sucesso'
+      });
+    }
+  };
+
   const value = {
     ...state,
     login,
     logout,
     getCurrentUser,
+    updateUserData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -145,7 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
   }
   return context;
 };
