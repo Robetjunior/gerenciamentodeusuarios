@@ -15,9 +15,10 @@ import { Mail, User as UserIcon, UserCheck } from 'lucide-react';
 interface UserFormProps {
   user?: User;
   isEditing?: boolean;
+  onSuccess?: () => void;
 }
 
-const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
+const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false, onSuccess }) => {
   const { user: currentUser, token } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -43,25 +44,25 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
     const newErrors = { name: '', email: '', password: '', role: '' };
     
     if (!formData.name) {
-      newErrors.name = 'Name is required';
+      newErrors.name = 'Nome é obrigatório';
       isValid = false;
     }
     
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email é obrigatório';
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
+      newErrors.email = 'Email é inválido';
       isValid = false;
     }
     
     if (!isEditing && !formData.password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Senha é obrigatória';
       isValid = false;
     }
     
     if (!formData.role) {
-      newErrors.role = 'Role is required';
+      newErrors.role = 'Função é obrigatória';
       isValid = false;
     }
     
@@ -85,30 +86,35 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
     setLoading(true);
     
     try {
-      console.log("Submitting form with token:", token);
+      console.log("Enviando formulário com token:", token);
       
       if (isEditing && user) {
-        // Only send fields that were changed
+        // Envia apenas os campos que foram alterados
         const updateData: Partial<User> = {};
         if (formData.name !== user.name) updateData.name = formData.name;
         if (formData.email !== user.email) updateData.email = formData.email;
         if (formData.role !== user.role) updateData.role = formData.role;
         
         await api.updateUser(user.id, updateData, token);
-        toast({ title: 'Success', description: 'User updated successfully' });
+        toast({ title: 'Sucesso', description: 'Usuário atualizado com sucesso' });
+        
+        // Chama o callback onSuccess se existir
+        if (onSuccess) {
+          onSuccess();
+        }
       } else {
         await api.register(formData, token);
-        toast({ title: 'Success', description: 'User created successfully' });
+        toast({ title: 'Sucesso', description: 'Usuário criado com sucesso' });
       }
       
       navigate('/users');
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Erro',
         description: (error as Error).message,
       });
-      console.error("API Error:", error);
+      console.error("Erro na API:", error);
     } finally {
       setLoading(false);
     }
@@ -119,13 +125,13 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nome</Label>
             <div className="relative">
               <UserIcon className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
               <Input
                 id="name"
                 name="name"
-                placeholder="Full Name"
+                placeholder="Nome Completo"
                 className="pl-10"
                 value={formData.name}
                 onChange={handleChange}
@@ -142,7 +148,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="name@example.com"
+                placeholder="nome@exemplo.com"
                 className="pl-10"
                 value={formData.email}
                 onChange={handleChange}
@@ -153,7 +159,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
           
           {!isEditing && (
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 name="password"
@@ -167,7 +173,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="role">Role</Label>
+            <Label htmlFor="role">Função</Label>
             <div className="relative">
               <UserCheck className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
               <Select
@@ -176,17 +182,17 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
                 onValueChange={handleRoleChange}
               >
                 <SelectTrigger className="pl-10">
-                  <SelectValue placeholder="Select role" />
+                  <SelectValue placeholder="Selecione a função" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="manager">Manager</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="admin">Administrador</SelectItem>
+                  <SelectItem value="manager">Gerente</SelectItem>
+                  <SelectItem value="user">Usuário</SelectItem>
                 </SelectContent>
               </Select>
               {!canEditRole && (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Only administrators can change roles
+                  Apenas administradores podem alterar funções
                 </p>
               )}
               {errors.role && <p className="text-sm text-destructive">{errors.role}</p>}
@@ -196,10 +202,10 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false }) => {
         
         <div className="flex space-x-4">
           <Button type="submit" disabled={loading}>
-            {loading ? 'Saving...' : isEditing ? 'Update User' : 'Create User'}
+            {loading ? 'Salvando...' : isEditing ? 'Atualizar Usuário' : 'Criar Usuário'}
           </Button>
           <Button type="button" variant="outline" onClick={() => navigate('/users')}>
-            Cancel
+            Cancelar
           </Button>
         </div>
       </form>
