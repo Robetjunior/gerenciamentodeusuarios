@@ -52,14 +52,10 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
     try {
       setIsDeleting(true);
       await api.deleteUser(user.id, token);
-      toast('Sucesso', {
-        description: 'Usuário excluído com sucesso'
-      });
+      toast('Usuário excluído com sucesso');
       onDelete();
     } catch (error) {
-      toast('Erro', {
-        description: (error as Error).message
-      });
+      toast(`Erro: ${(error as Error).message}`);
     } finally {
       setIsDeleting(false);
     }

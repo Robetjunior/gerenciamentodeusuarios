@@ -14,17 +14,17 @@ const NewUser = () => {
     <Layout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Create New User</h1>
-          <p className="text-muted-foreground">Add a new user to the system.</p>
+          <h1 className="text-2xl font-bold tracking-tight">Criar Novo Usuário</h1>
+          <p className="text-muted-foreground">Adicione um novo usuário ao sistema.</p>
         </div>
         
         {isAdmin ? (
           <UserForm />
         ) : (
           <Alert variant="destructive">
-            <AlertTitle>Access Denied</AlertTitle>
+            <AlertTitle>Acesso Negado</AlertTitle>
             <AlertDescription>
-              Only administrators can create new users.
+              Apenas administradores podem criar novos usuários.
             </AlertDescription>
           </Alert>
         )}

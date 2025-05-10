@@ -9,7 +9,7 @@ const Profile = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to the edit page for the current user
+    // Redirecionar para a página de edição para o usuário atual
     if (user?.id) {
       navigate(`/users/${user.id}/edit`);
     }

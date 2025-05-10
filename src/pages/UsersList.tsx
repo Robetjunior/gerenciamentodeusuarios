@@ -25,7 +25,7 @@ const UsersList = () => {
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Error',
+        title: 'Erro',
         description: (error as Error).message,
       });
     } finally {
@@ -54,15 +54,15 @@ const UsersList = () => {
       <div className="space-y-6">
         <div className="flex flex-col justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Users Management</h1>
-            <p className="text-muted-foreground">Manage system users and their access levels.</p>
+            <h1 className="text-2xl font-bold tracking-tight">Gerenciamento de Usuários</h1>
+            <p className="text-muted-foreground">Gerencie usuários do sistema e seus níveis de acesso.</p>
           </div>
           
           {currentUser?.role === 'admin' && (
             <Link to="/users/new">
               <Button>
                 <UserPlus className="mr-2 h-4 w-4" />
-                Add User
+                Adicionar Usuário
               </Button>
             </Link>
           )}
@@ -71,7 +71,7 @@ const UsersList = () => {
         <div className="relative">
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
           <Input
-            placeholder="Search users by name, email or role..."
+            placeholder="Buscar usuários por nome, email ou função..."
             className="pl-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -94,16 +94,16 @@ const UsersList = () => {
               <div className="flex h-40 flex-col items-center justify-center space-y-3 rounded-lg border bg-card p-8 text-center">
                 <Users className="h-10 w-10 text-muted-foreground/60" />
                 <div>
-                  <p className="text-lg font-medium">No users found</p>
+                  <p className="text-lg font-medium">Nenhum usuário encontrado</p>
                   <p className="text-sm text-muted-foreground">
                     {searchTerm
-                      ? `No users match the search term "${searchTerm}"`
-                      : "There are no users to display"}
+                      ? `Nenhum usuário corresponde ao termo "${searchTerm}"`
+                      : "Não há usuários para exibir"}
                   </p>
                 </div>
                 {searchTerm && (
                   <Button variant="outline" onClick={() => setSearchTerm('')}>
-                    Clear search
+                    Limpar busca
                   </Button>
                 )}
               </div>
