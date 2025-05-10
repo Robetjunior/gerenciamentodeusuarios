@@ -9,13 +9,13 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 import { Mail, User as UserIcon, UserCheck } from 'lucide-react';
 
 interface UserFormProps {
   user?: User;
   isEditing?: boolean;
-  onSuccess?: () => void;
+  onSuccess?: (updatedUser?: User) => void;
 }
 
 const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false, onSuccess }) => {
@@ -95,16 +95,22 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false, onSuccess 
         if (formData.email !== user.email) updateData.email = formData.email;
         if (formData.role !== user.role) updateData.role = formData.role;
         
-        await api.updateUser(user.id, updateData, token);
-        toast({ title: 'Sucesso', description: 'Usuário atualizado com sucesso' });
+        const updatedUser = await api.updateUser(user.id, updateData, token);
+        toast({ 
+          title: 'Sucesso', 
+          description: 'Usuário atualizado com sucesso' 
+        });
         
-        // Chama o callback onSuccess se existir
+        // Chama o callback onSuccess se existir, passando o usuário atualizado
         if (onSuccess) {
-          onSuccess();
+          onSuccess(updatedUser);
         }
       } else {
         await api.register(formData, token);
-        toast({ title: 'Sucesso', description: 'Usuário criado com sucesso' });
+        toast({ 
+          title: 'Sucesso', 
+          description: 'Usuário criado com sucesso' 
+        });
       }
       
       navigate('/users');

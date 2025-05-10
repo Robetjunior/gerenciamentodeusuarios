@@ -12,7 +12,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 const EditUser = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token, user: currentUser, getCurrentUser } = useAuth();
+  const { token, user: currentUser, getCurrentUser, updateUserData } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -94,10 +94,10 @@ const EditUser = () => {
         <UserForm 
           user={user} 
           isEditing 
-          onSuccess={() => {
+          onSuccess={(updatedUser) => {
             // Atualizar dados do usuário logado se for o próprio usuário
-            if (currentUser && currentUser.id === user.id) {
-              getCurrentUser();
+            if (currentUser && currentUser.id === user.id && updatedUser) {
+              updateUserData(updatedUser);
             }
           }}
         />
