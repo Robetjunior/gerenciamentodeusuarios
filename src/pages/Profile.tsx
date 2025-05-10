@@ -1,19 +1,19 @@
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import Layout from '@/components/Layout';
 
 const Profile = () => {
   const { user } = useAuth();
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Redirecionar para a página de edição para o usuário atual
     if (user?.id) {
-      router.push(`/users/${user.id}/edit`);
+      navigate(`/users/${user.id}/edit`);
     }
-  }, [user, router]);
+  }, [user, navigate]);
 
   return (
     <Layout>
