@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -108,9 +109,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false, onSuccess 
       
       navigate('/users');
     } catch (error) {
-      toast({
-        description: (error as Error).message,
-      });
+      toast(`Erro: ${(error as Error).message}`);
       console.error("Erro na API:", error);
     } finally {
       setLoading(false);
