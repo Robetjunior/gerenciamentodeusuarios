@@ -1,22 +1,23 @@
+
 import { LoginCredentials, RegisterData, User } from '@/types';
 
 const USERS_KEY = 'users';
 
 const delay = (ms = 500) => new Promise(r => setTimeout(r, ms));
 
-const getStoredUsers = (): User[] => {
+const getStoredUsers = (): (User & { password: string })[] => {
   const storedUsers = localStorage.getItem(USERS_KEY);
   return storedUsers ? JSON.parse(storedUsers) : [];
 };
 
-const updateStoredUsers = (users: User[]) => {
+const updateStoredUsers = (users: (User & { password: string })[]) => {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
 };
 
 /**
  * Authenticates a user with email and password.
  */
-export const login = async (credentials: LoginCredentials): Promise<{ user: User; token: string }> => {
+const login = async (credentials: LoginCredentials): Promise<{ user: User; token: string }> => {
   await delay();
 
   const users = getStoredUsers();
@@ -26,14 +27,16 @@ export const login = async (credentials: LoginCredentials): Promise<{ user: User
     throw new Error('Credenciais inválidas');
   }
 
+  // Não incluir a senha no objeto de retorno
+  const { password, ...userWithoutPassword } = user;
   const token = btoa(`${user.email}:${user.password}`);
-  return { user, token };
+  return { user: userWithoutPassword, token };
 };
 
 /**
  * Registers a new user.
  */
-export const register = async (data: RegisterData, token?: string): Promise<User> => {
+const register = async (data: RegisterData, token?: string): Promise<User> => {
   await delay();
   
   if (!token) throw new Error('Token de autenticação não fornecido');
@@ -43,7 +46,7 @@ export const register = async (data: RegisterData, token?: string): Promise<User
     throw new Error('Email já cadastrado');
   }
 
-  const newUser: User = {
+  const newUser = {
     id: String(Date.now()),
     ...data,
   };
@@ -51,10 +54,12 @@ export const register = async (data: RegisterData, token?: string): Promise<User
   users.push(newUser);
   updateStoredUsers(users);
 
-  return newUser;
+  // Não incluir a senha no objeto de retorno
+  const { password, ...userWithoutPassword } = newUser;
+  return userWithoutPassword;
 };
 
-const getUsersFromStorage = (): User[] => {
+const getUsersFromStorage = (): (User & { password: string })[] => {
   const storedUsers = localStorage.getItem('users');
   return storedUsers ? JSON.parse(storedUsers) : [];
 };
@@ -62,7 +67,7 @@ const getUsersFromStorage = (): User[] => {
 /**
  * Retrieves the current user based on the provided token.
  */
-export const getCurrentUser = async (token: string): Promise<User> => {
+const getCurrentUser = async (token: string): Promise<User> => {
   await delay();
 
   if (!token) {
@@ -80,7 +85,9 @@ export const getCurrentUser = async (token: string): Promise<User> => {
       throw new Error('Usuário não encontrado');
     }
 
-    return user;
+    // Não incluir a senha no objeto de retorno
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   } catch (error) {
     throw new Error('Token inválido');
   }
@@ -89,7 +96,7 @@ export const getCurrentUser = async (token: string): Promise<User> => {
 /**
  * Retrieves a user by ID.
  */
-export const getUserById = async (id: string, token?: string): Promise<User> => {
+const getUserById = async (id: string, token?: string): Promise<User> => {
   await delay();
   
   if (!token) throw new Error('Token de autenticação não fornecido');
@@ -101,13 +108,15 @@ export const getUserById = async (id: string, token?: string): Promise<User> => 
     throw new Error('Usuário não encontrado');
   }
 
-  return user;
+  // Não incluir a senha no objeto de retorno
+  const { password, ...userWithoutPassword } = user;
+  return userWithoutPassword;
 };
 
 /**
  * Updates an existing user
  */
-export const updateUser = async (userId: string, userData: Partial<User>, token?: string): Promise<User> => {
+const updateUser = async (userId: string, userData: Partial<User>, token?: string): Promise<User> => {
   // Simulate API call to update user
   await delay();
   
@@ -127,13 +136,15 @@ export const updateUser = async (userId: string, userData: Partial<User>, token?
   // Save updated users to storage
   localStorage.setItem('users', JSON.stringify(users));
   
-  return updatedUser; // Return the updated user
+  // Não incluir a senha no objeto de retorno
+  const { password, ...userWithoutPassword } = updatedUser;
+  return userWithoutPassword;
 };
 
 /**
  * Deletes a user by ID.
  */
-export const deleteUser = async (id: string, token?: string): Promise<void> => {
+const deleteUser = async (id: string, token?: string): Promise<void> => {
   await delay();
   
   if (!token) throw new Error('Token de autenticação não fornecido');
@@ -146,4 +157,33 @@ export const deleteUser = async (id: string, token?: string): Promise<void> => {
   }
 
   localStorage.setItem('users', JSON.stringify(updatedUsers));
+};
+
+/**
+ * Retrieves all users.
+ */
+const getAllUsers = async (token?: string): Promise<User[]> => {
+  await delay();
+  
+  if (!token) throw new Error('Token de autenticação não fornecido');
+
+  const users = getUsersFromStorage();
+  
+  // Remover as senhas de todos os usuários antes de retorná-los
+  return users.map(user => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  });
+};
+
+// Exportar todas as funções como um objeto api
+export const api = {
+  login,
+  register,
+  getCurrentUser,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getAllUsers
 };

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -96,10 +95,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false, onSuccess 
         if (formData.role !== user.role) updateData.role = formData.role;
         
         const updatedUser = await api.updateUser(user.id, updateData, token);
-        toast({ 
-          title: 'Sucesso', 
-          description: 'Usuário atualizado com sucesso' 
-        });
+        toast('Usuário atualizado com sucesso');
         
         // Chama o callback onSuccess se existir, passando o usuário atualizado
         if (onSuccess) {
@@ -107,17 +103,12 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false, onSuccess 
         }
       } else {
         await api.register(formData, token);
-        toast({ 
-          title: 'Sucesso', 
-          description: 'Usuário criado com sucesso' 
-        });
+        toast('Usuário criado com sucesso');
       }
       
       navigate('/users');
     } catch (error) {
       toast({
-        variant: 'destructive',
-        title: 'Erro',
         description: (error as Error).message,
       });
       console.error("Erro na API:", error);
