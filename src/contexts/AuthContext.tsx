@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { AuthState, LoginCredentials, User } from '@/types';
 import { api } from '@/services/api';
@@ -98,23 +97,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { user, token } = await api.login(credentials);
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
-      toast('Login realizado com sucesso', {
-        description: `Bem-vindo, ${user.name}!`
-      });
+      toast(`Bem-vindo, ${user.name}!`);
     } catch (error) {
       dispatch({ type: 'LOGIN_ERROR', payload: (error as Error).message });
-      toast('Falha no login', {
-        description: (error as Error).message
-      });
+      toast(`Falha no login: ${(error as Error).message}`);
     }
   };
 
   const logout = () => {
     dispatch({ type: 'LOGOUT' });
     localStorage.removeItem('token');
-    toast('Desconectado', {
-      description: 'Você foi desconectado com sucesso'
-    });
+    toast('Você foi desconectado com sucesso');
   };
 
   const getCurrentUser = async () => {
@@ -138,9 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateUserData = (user: User) => {
     if (state.user && state.user.id === user.id) {
       dispatch({ type: 'UPDATE_USER_DATA', payload: user });
-      toast('Perfil atualizado', {
-        description: 'Suas informações foram atualizadas com sucesso'
-      });
+      toast(`Perfil atualizado com sucesso`);
     }
   };
 

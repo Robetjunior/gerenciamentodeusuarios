@@ -26,9 +26,7 @@ const EditUser = () => {
         
         // Check if the current user has permission to edit this user
         if (currentUser?.role === 'user' && currentUser.id !== id) {
-          toast('Acesso negado', {
-            description: 'Você não tem permissão para editar outros usuários'
-          });
+          toast('Acesso negado: Você não tem permissão para editar outros usuários');
           navigate('/profile');
           return;
         }
@@ -39,18 +37,14 @@ const EditUser = () => {
           (fetchedUser.role === 'admin' || fetchedUser.role === 'manager') &&
           currentUser.id !== id
         ) {
-          toast('Acesso negado', {
-            description: `Gerentes não podem editar contas de ${fetchedUser.role === 'admin' ? 'administradores' : 'gerentes'}`
-          });
+          toast(`Acesso negado: Gerentes não podem editar contas de ${fetchedUser.role === 'admin' ? 'administradores' : 'gerentes'}`);
           navigate('/users');
           return;
         }
         
         setUser(fetchedUser);
       } catch (error) {
-        toast('Erro', {
-          description: (error as Error).message
-        });
+        toast(`Erro: ${(error as Error).message}`);
         navigate('/users');
       } finally {
         setLoading(false);

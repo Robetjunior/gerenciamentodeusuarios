@@ -5,6 +5,42 @@ const USERS_KEY = 'users';
 
 const delay = (ms = 500) => new Promise(r => setTimeout(r, ms));
 
+// Inicialização de usuários demo se não existirem
+const initializeDemoUsers = () => {
+  const storedUsers = localStorage.getItem(USERS_KEY);
+  if (!storedUsers) {
+    const demoUsers = [
+      { 
+        id: '1', 
+        name: 'Admin User', 
+        email: 'admin@example.com', 
+        password: 'admin123', 
+        role: 'admin' 
+      },
+      { 
+        id: '2', 
+        name: 'Manager User', 
+        email: 'manager@example.com', 
+        password: 'manager123', 
+        role: 'manager' 
+      },
+      { 
+        id: '3', 
+        name: 'Regular User', 
+        email: 'user@example.com', 
+        password: 'user123', 
+        role: 'user' 
+      },
+    ];
+    localStorage.setItem(USERS_KEY, JSON.stringify(demoUsers));
+    return demoUsers;
+  }
+  return JSON.parse(storedUsers);
+};
+
+// Garantir que os usuários demo existam
+initializeDemoUsers();
+
 const getStoredUsers = (): (User & { password: string })[] => {
   const storedUsers = localStorage.getItem(USERS_KEY);
   return storedUsers ? JSON.parse(storedUsers) : [];
@@ -59,11 +95,6 @@ const register = async (data: RegisterData, token?: string): Promise<User> => {
   return userWithoutPassword;
 };
 
-const getUsersFromStorage = (): (User & { password: string })[] => {
-  const storedUsers = localStorage.getItem('users');
-  return storedUsers ? JSON.parse(storedUsers) : [];
-};
-
 /**
  * Retrieves the current user based on the provided token.
  */
@@ -78,7 +109,7 @@ const getCurrentUser = async (token: string): Promise<User> => {
     const decodedToken = atob(token);
     const [email, password] = decodedToken.split(':');
 
-    const users = getUsersFromStorage();
+    const users = getStoredUsers();
     const user = users.find(u => u.email === email && u.password === password);
 
     if (!user) {
@@ -101,7 +132,7 @@ const getUserById = async (id: string, token?: string): Promise<User> => {
   
   if (!token) throw new Error('Token de autenticação não fornecido');
 
-  const users = getUsersFromStorage();
+  const users = getStoredUsers();
   const user = users.find(u => u.id === id);
 
   if (!user) {
@@ -122,7 +153,7 @@ const updateUser = async (userId: string, userData: Partial<User>, token?: strin
   
   if (!token) throw new Error('Token de autenticação não fornecido');
   
-  const users = getUsersFromStorage();
+  const users = getStoredUsers();
   const userIndex = users.findIndex(u => u.id === userId);
   
   if (userIndex === -1) {
@@ -134,7 +165,7 @@ const updateUser = async (userId: string, userData: Partial<User>, token?: strin
   users[userIndex] = updatedUser;
   
   // Save updated users to storage
-  localStorage.setItem('users', JSON.stringify(users));
+  updateStoredUsers(users);
   
   // Não incluir a senha no objeto de retorno
   const { password, ...userWithoutPassword } = updatedUser;
@@ -149,14 +180,14 @@ const deleteUser = async (id: string, token?: string): Promise<void> => {
   
   if (!token) throw new Error('Token de autenticação não fornecido');
 
-  const users = getUsersFromStorage();
+  const users = getStoredUsers();
   const updatedUsers = users.filter(u => u.id !== id);
 
   if (users.length === updatedUsers.length) {
     throw new Error('Usuário não encontrado');
   }
 
-  localStorage.setItem('users', JSON.stringify(updatedUsers));
+  updateStoredUsers(updatedUsers);
 };
 
 /**
@@ -167,7 +198,7 @@ const getAllUsers = async (token?: string): Promise<User[]> => {
   
   if (!token) throw new Error('Token de autenticação não fornecido');
 
-  const users = getUsersFromStorage();
+  const users = getStoredUsers();
   
   // Remover as senhas de todos os usuários antes de retorná-los
   return users.map(user => {

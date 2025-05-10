@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Role } from '@/types';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -22,17 +22,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      toast({
-        variant: 'destructive',
-        title: 'Autenticação necessária',
-        description: 'Por favor, faça login para acessar esta página',
-      });
+      toast('Autenticação necessária: Por favor, faça login para acessar esta página');
     } else if (!loading && isAuthenticated && allowedRoles && user && !allowedRoles.includes(user.role)) {
-      toast({
-        variant: 'destructive',
-        title: 'Acesso negado',
-        description: `Sua função (${roleTitles[user.role]}) não tem permissão para acessar esta página`,
-      });
+      toast(`Acesso negado: Sua função (${roleTitles[user.role]}) não tem permissão para acessar esta página`);
     }
   }, [isAuthenticated, loading, user, allowedRoles]);
 
