@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import Layout from '@/components/Layout';
 import { api } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -8,7 +9,6 @@ import UserCard from '@/components/UserCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/use-toast';
-import { Link } from 'react-router-dom';
 import { Search, UserPlus, Users } from 'lucide-react';
 
 const UsersList = () => {
@@ -59,7 +59,7 @@ const UsersList = () => {
           </div>
           
           {currentUser?.role === 'admin' && (
-            <Link to="/users/new">
+            <Link href="/users/new" passHref>
               <Button>
                 <UserPlus className="mr-2 h-4 w-4" />
                 Adicionar Usuário

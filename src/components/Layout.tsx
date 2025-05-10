@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -9,14 +9,14 @@ import { Role } from '@/types';
 import { Users, UserPlus, Settings, LogOut, User, Shield } from 'lucide-react';
 
 interface NavItemProps {
-  to: string;
+  href: string;
   icon: React.ReactNode;
   label: string;
   active: boolean;
   requiredRoles?: Role[];
 }
 
-const NavItem: React.FC<NavItemProps> = ({ to, icon, label, active, requiredRoles = ['admin', 'manager', 'user'] }) => {
+const NavItem: React.FC<NavItemProps> = ({ href, icon, label, active, requiredRoles = ['admin', 'manager', 'user'] }) => {
   const { user } = useAuth();
 
   if (!user || !requiredRoles.includes(user.role)) {
@@ -24,7 +24,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon, label, active, requiredRole
   }
 
   return (
-    <Link to={to} className="w-full">
+    <Link href={href} className="w-full">
       <Button
         variant={active ? 'secondary' : 'ghost'}
         className={cn(
@@ -52,14 +52,20 @@ const roleTitles: Record<Role, string> = {
 };
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const location = useLocation();
+  const router = useRouter();
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar for desktop */}
       <div className="hidden w-64 flex-col border-r bg-card p-4 md:flex">
+        {/* Sidebar header */}
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" />
@@ -82,35 +88,35 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         
         <div className="flex flex-col space-y-1">
           <NavItem
-            to="/dashboard"
+            href="/dashboard"
             icon={<Settings className="h-5 w-5" />}
             label="Painel"
-            active={location.pathname === '/dashboard'}
+            active={router.pathname === '/dashboard'}
           />
           <NavItem
-            to="/users"
+            href="/users"
             icon={<Users className="h-5 w-5" />}
             label="Usuários"
-            active={location.pathname === '/users'}
+            active={router.pathname === '/users'}
             requiredRoles={['admin', 'manager']}
           />
           <NavItem
-            to="/users/new"
+            href="/users/new"
             icon={<UserPlus className="h-5 w-5" />}
             label="Adicionar Usuário"
-            active={location.pathname === '/users/new'}
+            active={router.pathname === '/users/new'}
             requiredRoles={['admin']}
           />
           <NavItem
-            to="/profile"
+            href="/profile"
             icon={<User className="h-5 w-5" />}
             label="Meu Perfil"
-            active={location.pathname === '/profile'}
+            active={router.pathname === '/profile'}
           />
         </div>
         
         <div className="mt-auto">
-          <Button variant="outline" className="w-full justify-start gap-2" onClick={() => logout()}>
+          <Button variant="outline" className="w-full justify-start gap-2" onClick={handleLogout}>
             <LogOut className="h-5 w-5" />
             Sair
           </Button>
@@ -137,32 +143,32 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           {isMobileMenuOpen && (
             <div className="mt-4 flex flex-col space-y-1">
               <NavItem
-                to="/dashboard"
+                href="/dashboard"
                 icon={<Settings className="h-5 w-5" />}
                 label="Painel"
-                active={location.pathname === '/dashboard'}
+                active={router.pathname === '/dashboard'}
               />
               <NavItem
-                to="/users"
+                href="/users"
                 icon={<Users className="h-5 w-5" />}
                 label="Usuários"
-                active={location.pathname === '/users'}
+                active={router.pathname === '/users'}
                 requiredRoles={['admin', 'manager']}
               />
               <NavItem
-                to="/users/new"
+                href="/users/new"
                 icon={<UserPlus className="h-5 w-5" />}
                 label="Adicionar Usuário"
-                active={location.pathname === '/users/new'}
+                active={router.pathname === '/users/new'}
                 requiredRoles={['admin']}
               />
               <NavItem
-                to="/profile"
+                href="/profile"
                 icon={<User className="h-5 w-5" />}
                 label="Meu Perfil"
-                active={location.pathname === '/profile'}
+                active={router.pathname === '/profile'}
               />
-              <Button variant="outline" className="w-full justify-start gap-2" onClick={() => logout()}>
+              <Button variant="outline" className="w-full justify-start gap-2" onClick={handleLogout}>
                 <LogOut className="h-5 w-5" />
                 Sair
               </Button>

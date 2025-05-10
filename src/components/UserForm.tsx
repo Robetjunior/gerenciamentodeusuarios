@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, RegisterData, Role } from '@/types';
 import { api } from '@/services/api';
@@ -20,7 +20,7 @@ interface UserFormProps {
 
 const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false, onSuccess }) => {
   const { user: currentUser, token } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   
   const [formData, setFormData] = useState<RegisterData>({
@@ -107,7 +107,7 @@ const UserForm: React.FC<UserFormProps> = ({ user, isEditing = false, onSuccess 
         toast('Usuário criado com sucesso');
       }
       
-      navigate('/users');
+      router.push('/users');
     } catch (error) {
       toast(`Erro: ${(error as Error).message}`);
       console.error("Erro na API:", error);

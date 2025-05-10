@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { User, Role } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
@@ -82,7 +82,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
       
       <CardFooter className="flex justify-between border-t p-3">
         {canEdit && (
-          <Link to={`/users/${user.id}/edit`}>
+          <Link href={`/users/${user.id}/edit`} passHref>
             <Button variant="outline" size="sm" className="space-x-1">
               <Pencil className="h-4 w-4" />
               <span>Editar</span>

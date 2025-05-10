@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { User } from '@/types';
@@ -10,15 +9,15 @@ import { toast } from '@/components/ui/sonner';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
 const EditUser = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { token, user: currentUser, getCurrentUser, updateUserData } = useAuth();
+  const router = useRouter();
+  const { id } = router.query;
+  const { token, user: currentUser, updateUserData } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const fetchUser = async () => {
-      if (!id) return;
+      if (!id || typeof id !== 'string') return;
       
       try {
         setLoading(true);
@@ -27,7 +26,7 @@ const EditUser = () => {
         // Check if the current user has permission to edit this user
         if (currentUser?.role === 'user' && currentUser.id !== id) {
           toast('Acesso negado: Você não tem permissão para editar outros usuários');
-          navigate('/profile');
+          router.push('/profile');
           return;
         }
         
@@ -38,21 +37,23 @@ const EditUser = () => {
           currentUser.id !== id
         ) {
           toast(`Acesso negado: Gerentes não podem editar contas de ${fetchedUser.role === 'admin' ? 'administradores' : 'gerentes'}`);
-          navigate('/users');
+          router.push('/users');
           return;
         }
         
         setUser(fetchedUser);
       } catch (error) {
         toast(`Erro: ${(error as Error).message}`);
-        navigate('/users');
+        router.push('/users');
       } finally {
         setLoading(false);
       }
     };
     
-    fetchUser();
-  }, [id, token, navigate, currentUser]);
+    if (id) {
+      fetchUser();
+    }
+  }, [id, token, router, currentUser]);
   
   if (loading) {
     return (
