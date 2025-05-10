@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Shield } from 'lucide-react';
 
 const Index = () => {
@@ -23,32 +24,33 @@ const Index = () => {
             <Shield className="h-12 w-12 text-primary" />
           </div>
         </div>
-        <h1 className="mb-3 text-4xl font-bold tracking-tight">Role-Based Access Control</h1>
+        <h1 className="mb-3 text-4xl font-bold tracking-tight">Controle de Acesso por Funções</h1>
         <p className="mb-8 text-lg text-muted-foreground">
-          A system for managing users with different permission levels. Login to explore
-          features based on your role: Admin, Manager, or User.
+          Um sistema para gerenciar usuários com diferentes níveis de permissão. Faça login para explorar
+          recursos baseados na sua função: Administrador, Gerente ou Usuário.
         </p>
         
-        <div className="space-x-4">
+        <div className="flex justify-center space-x-4">
           <Button size="lg" onClick={() => navigate('/login')}>
-            Login
+            Entrar
           </Button>
+          <ThemeToggle />
         </div>
         
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
-            <h3 className="mb-2 text-lg font-semibold text-admin">Admin</h3>
-            <p className="text-sm">Full access to create, read, update, and delete all users and manage roles.</p>
+            <h3 className="mb-2 text-lg font-semibold text-admin">Administrador</h3>
+            <p className="text-sm">Acesso total para criar, ler, atualizar e excluir todos os usuários e gerenciar funções.</p>
           </div>
           
           <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
-            <h3 className="mb-2 text-lg font-semibold text-manager">Manager</h3>
-            <p className="text-sm">Can view all users and edit regular users, but cannot modify roles or create users.</p>
+            <h3 className="mb-2 text-lg font-semibold text-manager">Gerente</h3>
+            <p className="text-sm">Pode visualizar todos os usuários e editar usuários comuns, mas não pode modificar funções ou criar usuários.</p>
           </div>
           
           <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
-            <h3 className="mb-2 text-lg font-semibold text-user">User</h3>
-            <p className="text-sm">Limited access to view and edit only their own profile information.</p>
+            <h3 className="mb-2 text-lg font-semibold text-user">Usuário</h3>
+            <p className="text-sm">Acesso limitado para visualizar e editar apenas suas próprias informações de perfil.</p>
           </div>
         </div>
       </div>

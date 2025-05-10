@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { cn } from '@/lib/utils';
 import { Role } from '@/types';
 import { Users, UserPlus, Settings, LogOut, User, Shield } from 'lucide-react';
@@ -44,6 +45,12 @@ const roleColors: Record<Role, string> = {
   user: 'text-user',
 };
 
+const roleTitles: Record<Role, string> = {
+  admin: 'Administrador',
+  manager: 'Gerente',
+  user: 'Usuário',
+};
+
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -53,9 +60,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div className="flex min-h-screen bg-background">
       {/* Sidebar for desktop */}
       <div className="hidden w-64 flex-col border-r bg-card p-4 md:flex">
-        <div className="flex items-center gap-2 py-4">
-          <Shield className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-bold text-primary">Access Control</h1>
+        <div className="flex items-center justify-between py-4">
+          <div className="flex items-center gap-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold text-primary">Controle de Acesso</h1>
+          </div>
+          <ThemeToggle />
         </div>
         
         {user && (
@@ -65,7 +75,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
             <div className="text-center">
               <p className="font-medium">{user.name}</p>
-              <p className={cn('text-sm', roleColors[user.role])}>{user.role}</p>
+              <p className={cn('text-sm', roleColors[user.role])}>{roleTitles[user.role]}</p>
             </div>
           </div>
         )}
@@ -74,27 +84,27 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <NavItem
             to="/dashboard"
             icon={<Settings className="h-5 w-5" />}
-            label="Dashboard"
+            label="Painel"
             active={location.pathname === '/dashboard'}
           />
           <NavItem
             to="/users"
             icon={<Users className="h-5 w-5" />}
-            label="Users"
+            label="Usuários"
             active={location.pathname === '/users'}
             requiredRoles={['admin', 'manager']}
           />
           <NavItem
             to="/users/new"
             icon={<UserPlus className="h-5 w-5" />}
-            label="Add User"
+            label="Adicionar Usuário"
             active={location.pathname === '/users/new'}
             requiredRoles={['admin']}
           />
           <NavItem
             to="/profile"
             icon={<User className="h-5 w-5" />}
-            label="My Profile"
+            label="Meu Perfil"
             active={location.pathname === '/profile'}
           />
         </div>
@@ -102,7 +112,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="mt-auto">
           <Button variant="outline" className="w-full justify-start gap-2" onClick={() => logout()}>
             <LogOut className="h-5 w-5" />
-            Logout
+            Sair
           </Button>
         </div>
       </div>
@@ -114,11 +124,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-primary" />
-              <h1 className="text-lg font-bold text-primary">Access Control</h1>
+              <h1 className="text-lg font-bold text-primary">Controle de Acesso</h1>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-              {isMobileMenuOpen ? 'Close' : 'Menu'}
-            </Button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button variant="ghost" size="sm" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                {isMobileMenuOpen ? 'Fechar' : 'Menu'}
+              </Button>
+            </div>
           </div>
           
           {isMobileMenuOpen && (
@@ -126,32 +139,32 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <NavItem
                 to="/dashboard"
                 icon={<Settings className="h-5 w-5" />}
-                label="Dashboard"
+                label="Painel"
                 active={location.pathname === '/dashboard'}
               />
               <NavItem
                 to="/users"
                 icon={<Users className="h-5 w-5" />}
-                label="Users"
+                label="Usuários"
                 active={location.pathname === '/users'}
                 requiredRoles={['admin', 'manager']}
               />
               <NavItem
                 to="/users/new"
                 icon={<UserPlus className="h-5 w-5" />}
-                label="Add User"
+                label="Adicionar Usuário"
                 active={location.pathname === '/users/new'}
                 requiredRoles={['admin']}
               />
               <NavItem
                 to="/profile"
                 icon={<User className="h-5 w-5" />}
-                label="My Profile"
+                label="Meu Perfil"
                 active={location.pathname === '/profile'}
               />
               <Button variant="outline" className="w-full justify-start gap-2" onClick={() => logout()}>
                 <LogOut className="h-5 w-5" />
-                Logout
+                Sair
               </Button>
             </div>
           )}

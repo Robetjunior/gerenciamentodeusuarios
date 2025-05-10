@@ -14,18 +14,24 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   const { isAuthenticated, user, loading } = useAuth();
   const location = useLocation();
 
+  const roleTitles: Record<Role, string> = {
+    admin: 'administrador',
+    manager: 'gerente',
+    user: 'usuário',
+  };
+
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       toast({
         variant: 'destructive',
-        title: 'Authentication required',
-        description: 'Please log in to access this page',
+        title: 'Autenticação necessária',
+        description: 'Por favor, faça login para acessar esta página',
       });
     } else if (!loading && isAuthenticated && allowedRoles && user && !allowedRoles.includes(user.role)) {
       toast({
         variant: 'destructive',
-        title: 'Access denied',
-        description: `Your role (${user.role}) does not have permission to access this page`,
+        title: 'Acesso negado',
+        description: `Sua função (${roleTitles[user.role]}) não tem permissão para acessar esta página`,
       });
     }
   }, [isAuthenticated, loading, user, allowedRoles]);
